@@ -1,4 +1,3 @@
-# training.py
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
@@ -6,6 +5,7 @@ from tensorflow.keras.utils import to_categorical
 import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 
 # Memuat data dari file pickle
 with open("preprocessed_data.pkl", "rb") as f:
@@ -37,8 +37,8 @@ model = Sequential([
 # Compile model
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Melatih model
-model.fit(x_train, y_train, epochs=10, validation_data=(x_val, y_val))
+# Melatih model dan menyimpan history
+history = model.fit(x_train, y_train, epochs=5, validation_data=(x_val, y_val))
 
 # Menyimpan model
 model.save("finger_vein_model.h5")
@@ -46,5 +46,23 @@ model.save("finger_vein_model.h5")
 # Simpan label_map ke dalam file pickle
 with open("label_map.pkl", "wb") as f:
     pickle.dump(label_map, f)
+
+# Menyimpan history ke dalam file pickle
+with open("training_history.pkl", "wb") as f:
+    pickle.dump(history.history, f)
+
+# Plot akurasi untuk setiap epoch
+epochs = range(1, len(history.history['accuracy']) + 1)
+plt.plot(epochs, history.history['accuracy'], label='Train Accuracy')
+plt.plot(epochs, history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy per Epoch')
+
+# Simpan grafik ke dalam file PNG
+plt.savefig('accuracy_per_epoch.png')
+
+plt.show()
 
 print("Training selesai.")

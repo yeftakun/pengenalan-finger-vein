@@ -29,7 +29,9 @@ test_image = preprocess_image(test_image_path)
 # Melakukan prediksi
 prediction = model.predict(test_image)
 predicted_label = np.argmax(prediction)
+confidence_score = np.max(prediction)  # Mendapatkan persentase kecocokan
 
 print(f"Hasil prediksi: {reverse_label_map[predicted_label]}")
+print(f"Persentase kecocokan: {confidence_score * 100:.2f}%")
 
 print("Testing selesai.")
